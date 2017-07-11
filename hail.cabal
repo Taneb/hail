@@ -27,9 +27,12 @@ executable hail
                        Hail.Nix
   build-depends:       base >=4.9 && <4.10,
                        bytestring >=0.10.8 && <0.11,
+                       connection >=0.2.5 && <0.3,
+                       data-default-class,
                        directory >=1.3.0 && <1.4,
                        filepath >=1.4.1 && <1.5,
                        http-client >=0.5.6 && <0.6,
+                       http-client-tls >=0.3.3 && <0.4,
                        lens >=4.15.1 && <4.16,
                        lens-aeson >=1.0.0 && <1.1,
                        netrc >=0.2.0.0 && <0.3,
@@ -38,6 +41,7 @@ executable hail
                        parsec >=3.1.11 && <3.2,
                        process >=1.4.3 && <1.5,
                        text >=1.2.2 && <1.3,
+                       tls >=1.2 && <2,
                        wreq >=0.5 && <0.6
   default-language:    Haskell2010
   ghc-options:         -Wall
