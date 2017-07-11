@@ -4,6 +4,11 @@
 
 * Exit when hydra URI is invalid (Philipp Hausmann)
 
+## 0.1.1.0  -- 2017-07-11
+
+* Allow using HTTPS
+* Add a flag to allow server's TLS certificate to be self-signed
+
 ## 0.1.0.2  -- 2017-05-16
 
 * Fix bug in --oneshot that made it actually --noshot
