@@ -27,6 +27,8 @@ data Opts = Opts
   , netrcFile :: Maybe FilePath -- ^ The netrc file for hydra access.
   , pollPeriod :: Maybe Int     -- ^ The period to poll the job, in
                                 -- minutes, or 'Nothing' for a oneshot.
+  , allowSelfSign :: Bool       -- ^ Whether we allow self-signed
+                                -- certificates.
   }
 
 -- | Parser for the poll period command line flag
@@ -62,6 +64,10 @@ optsParser =  Opts
              <> metavar "NETRC_FILE"
              <> help "The netrc file for hydra HTTP access"))
           <*> (oneshotParser <|> pollPeriodParser)
+          <*> switch
+              ( long "allow-self-sign"
+              <> help "Whether to allow self-signed server certificates"
+              )
 
 -- | Full command line parser with usage string.
 optsParserInfo :: ParserInfo Opts
@@ -85,8 +91,8 @@ main = do
           case delay of
             Delay -> threadDelay $ minutesToMicroseconds period
             NoDelay -> return ()
-          pollLoop profilePath uri m_creds cont
-  pollLoop profilePath uri m_creds cont
+          pollLoop profilePath uri m_creds (allowSelfSign opts) cont
+  pollLoop profilePath uri m_creds (allowSelfSign opts) cont
 
 -- | Convert minutes to microseconds
 minutesToMicroseconds :: Int -> Int
@@ -100,10 +106,12 @@ data ShouldDelay = Delay | NoDelay
 pollLoop :: FilePath               -- ^ The profile path
          -> String                 -- ^ The job URI
          -> Maybe Auth             -- ^ The creds for talking to hydra
+         -> Bool                   -- ^ Whether to accept self-signed
+                                   --   certificates
          -> (ShouldDelay -> IO ()) -- ^ The continuation
          -> IO ()
-pollLoop profilePath uri m_creds cont =
-  getLatest uri m_creds >>= \case
+pollLoop profilePath uri m_creds selfSign cont =
+  getLatest uri m_creds selfSign >>= \case
     Left msg -> do
       hPutStrLn stderr msg
       cont Delay
